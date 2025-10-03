@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Objectif Followers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        .goal-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(66, 66, 66, 0.9);
+            border-radius: 12px;
+            padding: 20px 25px 15px;
+            min-width: 320px;
+            
+            animation: containerPulse 4s ease-in-out infinite;
+        }
+
+        .goal-title {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 
+                0 0 8px #808080,
+                0 0 15px #808080;
+            animation: textGlow 3s ease-in-out infinite alternate;
+        }
+
+        .goal-progress {
+            position: relative;
+            background: #3d3530;
+            border-radius: 8px;
+            height: 45px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 2px solid #424242;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: #bb6125;
+            border-radius: 6px;
+            width: 0%;
+            position: relative;
+            transition: width 1s ease-in-out;
+            box-shadow: 
+                0 0 15px rgba(128, 128, 128, 0.4),
+                inset 0 0 10px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        /* Animation de brillance sur la barre remplie */
+        .goal-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2) 45%, 
+                rgba(255, 255, 255, 0.2) 65%, 
+                transparent);
+            border-radius: 6px;
+            animation: progressShine 3s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .goal-numbers {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .current-followers {
+            color: #ffffff;
+            text-shadow: 0 0 10px #808080;
+        }
+
+        .goal-target {
+            color: #ffffff;
+            text-shadow: 0 0 8px #808080;
+        }
+
+        .goal-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 18px;
+            text-shadow: 
+                0 0 8px #000000,
+                0 0 15px #808080;
+            z-index: 4; /* Au-dessus de toutes les animations */
+        }
+
+
+
+        /* Animations */
+        @keyframes containerPulse {
+            0%, 100% {
+                background: rgba(66, 66, 66, 0.8);
+            }
+            50% {
+                background: rgba(66, 66, 66, 0.9);
+            }
+        }
+
+        @keyframes textGlow {
+            0% {
+                text-shadow: 
+                    0 0 6px #808080,
+                    0 0 12px #808080;
+            }
+            100% {
+                text-shadow: 
+                    0 0 10px #808080,
+                    0 0 18px #808080;
+            }
+        }
+
+
+
+        @keyframes progressShine {
+            0% { 
+                left: -50%;
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% { 
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+
+
+        /* Animation for goal updates */
+        .goal-update {
+            animation: goalPulse 0.6s ease-in-out;
+        }
+
+        @keyframes goalPulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="goal-container">
+        <div class="goal-title" id="goal-title">Objectif Followers</div>
+        <div class="goal-progress">
+            <div class="goal-progress-fill" id="progress-bar"></div>
+            <div class="goal-percentage" id="goal-percentage">0%</div>
+        </div>
+        <div class="goal-numbers">
+            <span class="current-followers" id="current-amount">4</span>
+            <span class="goal-target" id="target-amount">50</span>
+        </div>
+
+    </div>
+
+    <script>
+        // Streamlabs Goal Events
+        document.addEventListener('goalLoad', (obj) => {
+            // obj.detail will contain information about the current goal
+            // this will fire only once when the widget loads
+            console.log('Goal loaded:', obj.detail);
+            updateGoalContent(obj.detail);
+        });
+
+        document.addEventListener('goalEvent', (obj) => {
+            // This fires when the goal is updated
+            console.log('Goal updated:', obj.detail);
+            updateGoalContent(obj.detail);
+            
+            // Add pulse animation on update
+            const container = document.querySelector('.goal-container');
+            container.classList.add('goal-update');
+            setTimeout(() => {
+                container.classList.remove('goal-update');
+            }, 600);
+        });
+
+        function updateGoalContent(detail) {
+            if (!detail || !detail.amount) {
+                console.log('Invalid goal data received');
+                return;
+            }
+
+            const current = detail.amount.current|| 30;
+            const target = detail.amount.target || 70;
+            const title = detail.title || 'ZZZZZZZZZZ';
+            
+            // Calculate percentage, ensure it doesn't exceed 100%
+            const percent = Math.min(((current / target) * 100), 100).toFixed(1);
+
+            console.log(`Updating goal: ${current}/${target} (${percent}%)`);
+
+            // Update amounts and title
+            document.getElementById('current-amount').textContent = current.toLocaleString();
+            document.getElementById('goal-title').textContent = title;
+            document.getElementById('target-amount').textContent = target.toLocaleString();
+            document.getElementById('goal-percentage').textContent = percent + '%';
+
+            // Update progress bar width
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+    </script>
+</body>
+</html>

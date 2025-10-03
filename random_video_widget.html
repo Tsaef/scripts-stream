@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Video Widget</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 1920px;
+            height: 1080px;
+            background: transparent;
+            overflow: hidden;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            position: relative;
+        }
+
+
+        /* Window Container */
+        .video-window {
+            position: absolute;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #000000 #000000 #ffffff;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 9999;
+        }
+
+        .video-window.visible {
+            display: block;
+        }
+
+        /* Title Bar */
+        .title-bar {
+            background: #000080;
+            color: white;
+            padding: 3px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .title-bar-icon {
+            width: 16px;
+            height: 16px;
+            background: url('https://avatars.fastly.steamstatic.com/86ba2db86ab21a6e55db18c24c9128a17e2473cd_full.jpg') center center/cover;
+            border: 1px solid #000;
+        }
+
+        .title-bar-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-bar-button {
+            width: 18px;
+            height: 16px;
+            background: #c0c0c0;
+            border: 1px solid;
+            border-color: #ffffff #000000 #000000 #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .title-bar-button:hover {
+            background: #d0d0d0;
+        }
+
+        .title-bar-button:active {
+            border-color: #000000 #ffffff #ffffff #000000;
+            background: #a0a0a0;
+        }
+
+        /* Window Content */
+        .window-content {
+            background: #00000000;
+            padding: 2px;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 100%;
+            background: #c0c0c0;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Animations */
+        @keyframes windowAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes windowDisappear {
+            from {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+        }
+
+        .video-window.appearing {
+            animation: windowAppear 0.3s ease-out forwards;
+        }
+
+        .video-window.disappearing {
+            animation: windowDisappear 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Window (Hidden by default) -->
+    <div class="video-window" id="videoWindow">
+        <div class="title-bar" id="titleBar">
+            <div class="title-bar-text">
+                <div class="title-bar-icon"></div>
+                <span id="windowTitle">Vidéo</span>
+            </div>
+            <div class="title-bar-controls">
+                <div class="title-bar-button" id="minimizeBtn">_</div>
+                <div class="title-bar-button" id="maximizeBtn">□</div>
+                <div class="title-bar-button" id="closeBtn">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="video-container">
+                <video id="videoPlayer" autoplay onloadedmetadata="this.volume=0.7"></video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION - MODIFIE CES VALEURS
+        // ==========================================
+        const path = "..\\videos\\"
+
+        const CONFIG = {
+            // Liste des vidéos à afficher aléatoirement
+            // IMPORTANT: Utilise des liens directs vers des fichiers vidéo (.mp4, .webm, etc.)
+            // Les liens YouTube ne fonctionnent PAS avec la balise <video>
+            videos: [
+                {
+                    url: "gratte_le_cul.mp4",
+                    title: 'Petite comptine'
+                },
+                {
+                    url: "metal_pipe.mp4",
+                    title: '<3'
+                },
+                {
+                    url: "avast.mp4",
+                    title: 'AVAST'
+                },
+                {
+                    url: "jean.mp4",
+                    title: 'Sur GTA bien sûr'
+                },
+                {
+                    url: "emmerde.mp4",
+                    title: 'SANS EXCEPTION'
+                },
+                {
+                    url: "decideur.mp4",
+                    title: 'C\'est moi hein'
+                },
+                {
+                    url: "rien.mp4",
+                    title: 'Problème technique...'
+                },
+                {
+                    url: "ramadan.mp4",
+                    title: 'a bon entendeur...........'
+                },
+                {
+                    url: "rototo.mp4",
+                    title: 'Un chat dans la gorge'
+                },
+                {
+                    url: "breakup.mp4",
+                    title: 'break up...'
+                },
+                {
+                    url: "harrypotter.mp4",
+                    title: 'Soirée ciné !'
+                },
+                {
+                    url: "menaces.mp4",
+                    title: 'M̵̘̼̖̺̦̟͖͕̉͛̓̈́̕ͅe̷̹̱̗̺̘̫̥̦̫̫͚̲̾̽̌̊̕n̶̟̈́͆̽͛̍̉̑͛̏͋͒̃̊͋͘â̸̢̛̳͓̬̺͇͎̼͛̊̌̏͒̑͛͑̉̈́̕͝c̵̡̹͇͕͈̲̫͇̝͍̫̯͓͍̫͑͆͒̈̿̓͂̉̈́̀̕̚ĕ̸̡̨͉̫̪͙̹͙̲̯͚̈́ M̵̘̼̖̺̦̟͖͕̉͛̓̈́̕ͅe̷̹̱̗̺̘̫̥̦̫̫͚̲̾̽̌̊̕n̶̟̈́͆̽͛̍̉̑͛̏͋͒̃̊͋͘â̸̢̛̳͓̬̺͇͎̼͛̊̌̏͒̑͛͑̉̈́̕͝c̵̡̹͇͕͈̲̫͇̝͍̫̯͓͍̫͑͆͒̈̿̓͂̉̈́̀̕̚ĕ̸̡̨͉̫̪͙̹͙̲̯͚̈́ M̵̘̼̖̺̦̟͖͕̉͛̓̈́̕ͅe̷̹̱̗̺̘̫̥̦̫̫͚̲̾̽̌̊̕n̶̟̈́͆̽͛̍̉̑͛̏͋͒̃̊͋͘â̸̢̛̳͓̬̺͇͎̼͛̊̌̏͒̑͛͑̉̈́̕͝c̵̡̹͇͕͈̲̫͇̝͍̫̯͓͍̫͑͆͒̈̿̓͂̉̈́̀̕̚ĕ̸̡̨͉̫̪͙̹͙̲̯͚̈́'
+                },
+                {
+                    url: "eipstein.mp4",
+                    title: 'Chic type'
+                }
+            ],
+
+            // Intervalle d'apparition en millisecondes (min et max)
+            appearIntervalMin: 1 * 1000,  // 10 secondes minimum
+            appearIntervalMax: 2 * 1000, // 20 minutes maximum
+            
+            // Dimensions de la fenêtre (min et max en pixels)
+            windowSizeMin: 300,
+            windowSizeMax: 600,
+            
+            // Marges depuis les bords de l'écran
+            marginFromEdge: 75
+        };
+
+        // ==========================================
+        // CODE DU WIDGET - NE PAS MODIFIER
+        // ==========================================
+
+        const videoWindow = document.getElementById('videoWindow');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const windowTitle = document.getElementById('windowTitle');
+        const closeBtn = document.getElementById('closeBtn');
+        const minimizeBtn = document.getElementById('minimizeBtn');
+        const maximizeBtn = document.getElementById('maximizeBtn');
+        const titleBar = document.getElementById('titleBar');
+
+        let isVisible = false;
+        let nextAppearanceTimeout = null;
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+
+        // Fonction pour obtenir une position aléatoire
+        function getRandomPosition(windowWidth, windowHeight) {
+            // Position aléatoire n'importe où dans l'écran
+            const x = Math.random() * (1920 - windowWidth - CONFIG.marginFromEdge * 2) + CONFIG.marginFromEdge;
+            const y = Math.random() * (1080 - windowHeight - CONFIG.marginFromEdge * 2) + CONFIG.marginFromEdge;
+
+            return { x: Math.floor(x), y: Math.floor(y) };
+        }
+
+        // Fonction pour obtenir une taille aléatoire
+        function getRandomSize() {
+            const width = Math.floor(Math.random() * (CONFIG.windowSizeMax - CONFIG.windowSizeMin) + CONFIG.windowSizeMin);
+            const height = Math.floor(Math.random() * (CONFIG.windowSizeMax - CONFIG.windowSizeMin) + CONFIG.windowSizeMin);
+            return { width, height };
+        }
+
+        // Fonction pour afficher la fenêtre vidéo
+        function showVideoWindow() {
+            if (isVisible) return;
+
+            // Sélectionner une vidéo aléatoire
+            const randomVideo = CONFIG.videos[Math.floor(Math.random() * CONFIG.videos.length)];
+
+            // Définir la vidéo et le titre
+            videoPlayer.src = path + randomVideo.url;
+            windowTitle.textContent = randomVideo.title;
+
+            // Attendre que les métadonnées de la vidéo soient chargées
+            videoPlayer.addEventListener('loadedmetadata', function onMetadataLoaded() {
+                // Retirer l'écouteur pour éviter qu'il se déclenche plusieurs fois
+                videoPlayer.removeEventListener('loadedmetadata', onMetadataLoaded);
+
+                // Récupérer les dimensions réelles de la vidéo
+                const videoWidth = videoPlayer.videoWidth;
+                const videoHeight = videoPlayer.videoHeight;
+
+                // Calculer les dimensions de la fenêtre en respectant les limites
+                let windowWidth = Math.min(Math.max(videoWidth, CONFIG.windowSizeMin), CONFIG.windowSizeMax);
+                let windowHeight = Math.min(Math.max(videoHeight, CONFIG.windowSizeMin), CONFIG.windowSizeMax);
+
+                // Maintenir le ratio d'aspect de la vidéo
+                const videoRatio = videoWidth / videoHeight;
+                const windowRatio = windowWidth / windowHeight;
+
+                if (windowRatio > videoRatio) {
+                    windowWidth = windowHeight * videoRatio;
+                } else {
+                    windowHeight = windowWidth / videoRatio;
+                }
+
+                // Calculer la hauteur de la barre de titre (environ 24px)
+                const titleBarHeight = 24;
+                const totalWindowHeight = windowHeight + titleBarHeight;
+
+                videoWindow.style.width = windowWidth + 'px';
+                document.querySelector('.window-content').style.height = windowHeight + 'px';
+
+                // Définir une position aléatoire
+                const position = getRandomPosition(windowWidth, totalWindowHeight);
+                videoWindow.style.left = position.x + 'px';
+                videoWindow.style.top = position.y + 'px';
+
+                // Afficher la fenêtre avec animation
+                videoWindow.classList.add('visible', 'appearing');
+                videoWindow.classList.remove('disappearing');
+
+                setTimeout(() => {
+                    videoWindow.classList.remove('appearing');
+                }, 300);
+
+                console.log(`Vidéo affichée: ${randomVideo.title} à (${position.x}, ${position.y}) - ${Math.round(windowWidth)}x${Math.round(windowHeight)}px`);
+            });
+
+            isVisible = true;
+
+            // Jouer la vidéo
+            videoPlayer.play().catch(err => console.log('Erreur lecture vidéo:', err));
+        }
+
+        // Fonction pour cacher la fenêtre vidéo
+        function hideVideoWindow() {
+            if (!isVisible) return;
+            
+            videoWindow.classList.add('disappearing');
+            videoWindow.classList.remove('appearing');
+            
+            setTimeout(() => {
+                videoWindow.classList.remove('visible', 'disappearing');
+                videoPlayer.pause();
+                videoPlayer.currentTime = 0;
+                isVisible = false;
+
+                // Programmer la prochaine apparition
+                scheduleNextAppearance();
+            }, 300);
+        }
+
+        // Fonction pour programmer la prochaine apparition
+        function scheduleNextAppearance() {
+            if (nextAppearanceTimeout) {
+                clearTimeout(nextAppearanceTimeout);
+            }
+            
+            const delay = Math.random() * (CONFIG.appearIntervalMax - CONFIG.appearIntervalMin) + CONFIG.appearIntervalMin;
+            console.log(`Prochaine apparition dans ${Math.floor(delay / 1000)} secondes`);
+            
+            nextAppearanceTimeout = setTimeout(showVideoWindow, delay);
+        }
+
+        // Gestionnaires d'événements pour les boutons
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hideVideoWindow();
+        });
+
+        minimizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hideVideoWindow();
+        });
+
+        maximizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Optionnel: implémenter la maximisation
+        });
+
+        // Rendre la fenêtre déplaçable
+        titleBar.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('title-bar-button')) return;
+            
+            isDragging = true;
+            dragOffset.x = e.clientX - videoWindow.offsetLeft;
+            dragOffset.y = e.clientY - videoWindow.offsetTop;
+            videoWindow.style.cursor = 'move';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            let newX = e.clientX - dragOffset.x;
+            let newY = e.clientY - dragOffset.y;
+            
+            // Limiter aux bords de l'écran
+            newX = Math.max(0, Math.min(newX, 1920 - videoWindow.offsetWidth));
+            newY = Math.max(0, Math.min(newY, 1080 - videoWindow.offsetHeight));
+            
+            videoWindow.style.left = newX + 'px';
+            videoWindow.style.top = newY + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            videoWindow.style.cursor = '';
+        });
+
+        // Event listener pour la fin de la vidéo
+        videoPlayer.addEventListener('ended', () => {
+            console.log('Vidéo terminée, fermeture de la fenêtre');
+            hideVideoWindow();
+        });
+
+        // Démarrer le widget
+        console.log('Widget vidéo aléatoire démarré');
+        scheduleNextAppearance();
+
+        // Optionnel: test immédiat (décommenter pour tester)
+        // setTimeout(showVideoWindow, 2000);
+    </script>
+</body>
+</html>

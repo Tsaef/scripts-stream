@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 3.1 Background</title>
+    
+    <!-- Import Google Fonts pour une meilleure authenticité Windows 3.1 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =================== VARIABLES CSS =================== */
+        :root {
+            /* Couleurs Windows 3.1 */
+            --color-teal: #008080;
+            --color-silver: #c0c0c0;
+            --color-blue: #000080;
+            --color-gray: #808080;
+            --color-white: #ffffff;
+            --color-black: #000000;
+            
+            /* Dimensions pour 1920x1080 */
+            --viewport-width: 1920px;
+            --viewport-height: 1080px;
+            --scale-factor: 2; /* Facteur d'agrandissement pour 1920x1080 */
+            
+            /* Bordures Windows 3.1 */
+            --border-raised: 2px solid;
+            --border-raised-colors: var(--color-white) var(--color-black) var(--color-black) var(--color-white);
+            --border-lowered-colors: var(--color-black) var(--color-white) var(--color-white) var(--color-black);
+            
+            /* Ombres */
+            --shadow-window: 2px 2px 0 rgba(0, 0, 0, 0.3);
+            
+            /* Polices et tailles (agrandies) */
+            --font-family: 'IBM Plex Mono', 'Courier New', monospace;
+            --font-size-small: calc(10px * var(--scale-factor));
+            --font-size-normal: calc(11px * var(--scale-factor));
+            --font-size-medium: calc(12px * var(--scale-factor));
+            --font-size-large: calc(13px * var(--scale-factor));
+            
+            /* Image pixelation */
+            --pixelated-rendering: -moz-crisp-edges, -webkit-crisp-edges, pixelated, crisp-edges;
+            
+            /* URL d'avatar */
+            --avatar-url: url('https://avatars.fastly.steamstatic.com/86ba2db86ab21a6e55db18c24c9128a17e2473cd_full.jpg');
+        }
+
+        /* =================== RESET =================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* =================== BASE STYLES =================== */
+        body {
+            min-width: var(--viewport-width);
+            min-height: var(--viewport-height);
+            width: 100vw;
+            height: 100vh;
+            background: var(--color-teal);
+            overflow: auto;
+            font-family: var(--font-family);
+            position: relative;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: grayscale;
+            font-smooth: never;
+        }
+
+        span {
+            font-family: var(--font-family);
+        }
+
+        /* =================== MIXINS/UTILITIES =================== */
+        .win31-window {
+            background: var(--color-silver);
+            border: var(--border-raised);
+            border-color: var(--border-raised-colors);
+            box-shadow: var(--shadow-window);
+        }
+
+        .win31-button {
+            background: var(--color-silver);
+            border: 1px solid;
+            border-color: var(--border-raised-colors);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .win31-button:active {
+            border-color: var(--border-lowered-colors);
+        }
+
+        .pixelated-image {
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            filter: contrast(1.3) saturate(0.8) blur(0.3px);
+        }
+
+        /* =================== PROGRAM MANAGER WINDOW =================== */
+        .program-manager {
+            position: absolute;
+            top: calc(125px * var(--scale-factor));
+            left: calc(300px * var(--scale-factor));
+            width: calc(600px * var(--scale-factor));
+            height: calc(350px * var(--scale-factor));
+            z-index: 0;
+            animation: windowAppear 0.3s ease-out;
+        }
+
+        /* =================== TITLE BAR =================== */
+        .title-bar {
+            background: var(--color-blue);
+            color: var(--color-white);
+            padding: calc(3px * var(--scale-factor)) calc(5px * var(--scale-factor));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: var(--font-size-large);
+        }
+
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: calc(5px * var(--scale-factor));
+        }
+
+        .title-bar-icon {
+            width: calc(16px * var(--scale-factor));
+            height: calc(16px * var(--scale-factor));
+            background: var(--avatar-url) center center/cover;
+            border: 1px solid var(--color-black);
+        }
+
+        .title-bar-controls {
+            display: flex;
+            gap: calc(2px * var(--scale-factor));
+        }
+
+        .title-bar-button {
+            width: calc(18px * var(--scale-factor));
+            height: calc(16px * var(--scale-factor));
+            font-size: var(--font-size-small);
+            font-weight: bold;
+        }
+
+        /* =================== MENU BAR =================== */
+        .menu-bar {
+            background: var(--color-silver);
+            padding: calc(3px * var(--scale-factor)) calc(5px * var(--scale-factor));
+            border-bottom: 1px solid var(--color-gray);
+            display: flex;
+            gap: calc(15px * var(--scale-factor));
+            font-size: var(--font-size-medium);
+        }
+
+        .menu-item {
+            cursor: pointer;
+            padding: calc(2px * var(--scale-factor)) calc(5px * var(--scale-factor));
+        }
+
+        .menu-item:hover,
+        .menu-item-hover {
+            background: var(--color-blue);
+            color: var(--color-white);
+        }
+
+        .menu-item u {
+            text-decoration: underline;
+        }
+
+        /* =================== WINDOW CONTENT =================== */
+        .window-content {
+            background: var(--color-silver);
+            padding: calc(8px * var(--scale-factor));
+            min-height: calc(200px * var(--scale-factor));
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: calc(20px * var(--scale-factor)) calc(8px * var(--scale-factor));
+        }
+
+        /* =================== PROGRAM GROUP ICONS =================== */
+        .program-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: calc(3px * var(--scale-factor));
+            cursor: pointer;
+            padding: calc(3px * var(--scale-factor));
+        }
+
+        .program-group:hover {
+            outline: 1px dotted var(--color-black);
+        }
+
+        .group-icon {
+            width: calc(32px * var(--scale-factor));
+            height: calc(32px * var(--scale-factor));
+            background: var(--color-silver);
+            border: var(--border-raised);
+            border-color: var(--border-raised-colors);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            filter: contrast(1.2) saturate(0.7);
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .group-icon::before {
+            content: '';
+            width: calc(20px * var(--scale-factor));
+            height: calc(20px * var(--scale-factor));
+            background: linear-gradient(135deg, #ff0000 25%, #00ff00 25%, #00ff00 50%, #0000ff 50%, #0000ff 75%, #ffff00 75%);
+            border: 1px solid var(--color-black);
+            filter: contrast(1.3) saturate(0.8) blur(0.2px);
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .group-label {
+            font-size: var(--font-size-normal);
+            text-align: center;
+            background: var(--color-teal);
+            color: var(--color-white);
+            padding: calc(2px * var(--scale-factor)) calc(5px * var(--scale-factor));
+            white-space: nowrap;
+        }
+
+        /* =================== GAME ICONS =================== */
+        .group-icon.dofus::before { background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS882uA6pOgmTS3-URVwHTre9YXF6JN2feGOA&s') center center/cover; }
+        .group-icon.cs2::before { background: url('https://static.wikia.nocookie.net/logopedia/images/4/49/Counter-Strike_2_%28Icon%29.png') center center/cover; }
+        .group-icon.valorant::before { background: url('https://images.steamusercontent.com/ugc/1009310639741043947/C4780FD7B53B39EFE4A536842FC1281A48A1256F/?imw=5000&imh=5000&ima=fit') center center/cover; }
+        .group-icon.eldenring::before { background: url('https://images.steamusercontent.com/ugc/794237145748585532/D6DD63B3220F286C1AE9CE6EB4041E5257120CBD/?imw=637&imh=358&ima=fit') center center/cover; }
+        .group-icon.skate::before { background: url('https://i1.sndcdn.com/artworks-000559475199-a78g9g-t500x500.jpg') center center/cover; }
+        .group-icon.repo::before { background: url('https://m.media-amazon.com/images/M/MV5BYmUyZTU0NzUtMWVhZC00NDhhLWE2YTQtNWExNDhhOThjMTlkXkEyXkFqcGc@._V1_QL75_UY281_CR31,0,500,281_.jpg') center center/cover; }
+        .group-icon.gtav::before { background: url('https://i.pinimg.com/474x/06/21/9f/06219f680deea246d8dc88a2b8f2c3ab.jpg') center center/cover; }
+        .group-icon.balatro::before { background: url('https://cdn2.steamgriddb.com/icon/6c3ee6dcff80d34567671bce66bc911e/32/256x256.png') center center/cover; }
+        .group-icon.fortnite::before { background: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Fortnite_F_lettermark_logo.png') center center/cover; }
+        .group-icon.golfit::before { background: url('https://cdn2.steamgriddb.com/icon/135a4ccb1b2f60f600ab97fa03b5e8cf/32/512x512.png') center center/cover; }
+        .group-icon.peak::before { background: url('https://cdn2.steamgriddb.com/icon/55c1db3215355af45d48f701bb19527f/32/256x256.png') center center/cover; }
+        .group-icon.helldivers::before { background: url('https://sw6.elbenwald.de/media/59/80/32/1720565693/E1083906_2.jpg') center center/cover; }
+        .group-icon.trackmania::before { background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2YcC4ymoUwwxsMzJq0HCesq6YqkI44p1xlw&s') center center/cover; }
+        .group-icon.remnant::before { background: url('https://upload.wikimedia.org/wikipedia/fr/f/f0/Remnant_2_Logo.png') center center/cover; }
+        .group-icon.tboi::before { background: url('https://i.pinimg.com/736x/e3/de/6d/e3de6db9da7b47352840b2b33fda649d.jpg') center center/cover; }
+        .group-icon.betonbrutal::before { background: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2330500/header.jpg?t=1711992413') center center/cover; }
+
+        /* =================== NESTED PROGRAM WINDOW =================== */
+        .program-window {
+            position: absolute;
+            top: calc(40px * var(--scale-factor));
+            left: calc(50px * var(--scale-factor));
+            width: calc(280px * var(--scale-factor));
+            z-index: 5;
+        }
+
+        .program-window .title-bar {
+            background: var(--color-gray);
+        }
+
+        .program-window .window-content {
+            display: flex;
+            flex-direction: column;
+            gap: calc(8px * var(--scale-factor));
+            padding: calc(10px * var(--scale-factor));
+            aspect-ratio: 1 / 1;
+            width: 100%;
+        }
+
+        /* =================== DESKTOP ICONS =================== */
+        .desktop-icon {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: calc(3px * var(--scale-factor));
+            cursor: pointer;
+            padding: calc(5px * var(--scale-factor));
+        }
+
+        .desktop-icon:hover {
+            outline: 1px dotted var(--color-white);
+        }
+
+        .desktop-icon-img {
+            width: calc(46px * var(--scale-factor));
+            height: calc(46px * var(--scale-factor));
+            background: url("https://upload.wikimedia.org/wikipedia/commons/1/19/Twitch.jpg") center center/cover;
+            border: var(--border-raised);
+            border-color: var(--border-raised-colors);
+        }
+
+        .desktop-icon-label {
+            font-size: var(--font-size-normal);
+            color: var(--color-white);
+            text-shadow: 1px 1px 0 var(--color-black);
+            text-align: center;
+        }
+
+        /* =================== TASKBAR =================== */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(28px * var(--scale-factor));
+            background: var(--color-silver);
+            border-top: var(--border-raised);
+            border-color: var(--border-raised-colors);
+            display: flex;
+            align-items: center;
+            padding: calc(2px * var(--scale-factor));
+            gap: calc(4px * var(--scale-factor));
+            z-index: 9999;
+        }
+
+        .start-button {
+            height: calc(24px * var(--scale-factor));
+            padding: 0 calc(8px * var(--scale-factor));
+            font-size: var(--font-size-medium);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: calc(4px * var(--scale-factor));
+        }
+
+        .start-logo {
+            width: calc(20px * var(--scale-factor));
+            height: calc(20px * var(--scale-factor));
+            background: url("https://www.logo.wine/a/logo/Windows_3.1x/Windows_3.1x-Logo.wine.svg") center center/cover;
+            image-rendering: pixelated;
+        }
+
+        .taskbar-separator {
+            width: 1px;
+            height: calc(20px * var(--scale-factor));
+            background: var(--color-gray);
+            border-right: 1px solid var(--color-white);
+        }
+
+        .taskbar-windows {
+            flex: 1;
+            display: flex;
+            gap: calc(2px * var(--scale-factor));
+            overflow-x: auto;
+
+            .win31-button {
+                justify-content: left;
+            }
+        }
+
+        .taskbar-window-button {
+            height: calc(24px * var(--scale-factor));
+            min-width: calc(120px * var(--scale-factor));
+            max-width: calc(160px * var(--scale-factor));
+            padding: 0 calc(6px * var(--scale-factor));
+            font-size: var(--font-size-normal);
+            display: flex;
+            align-items: center;
+            gap: calc(4px * var(--scale-factor));
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .taskbar-window-icon {
+            width: calc(14px * var(--scale-factor));
+            height: calc(14px * var(--scale-factor));
+            background: var(--avatar-url) center center/cover;
+            border: 1px solid var(--color-black);
+            flex-shrink: 0;
+        }
+
+        .taskbar-tray {
+            display: flex;
+            gap: calc(4px * var(--scale-factor));
+            align-items: center;
+        }
+
+        .taskbar-icon {
+            width: calc(16px * var(--scale-factor));
+            height: calc(16px * var(--scale-factor));
+            background: var(--color-silver);
+            border: 1px solid var(--color-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(10px * var(--scale-factor));
+            cursor: pointer;
+        }
+
+        .taskbar-clock {
+            height: calc(20px * var(--scale-factor));
+            padding: 0 calc(6px * var(--scale-factor));
+            background: var(--color-silver);
+            border: 1px solid;
+            border-color: var(--border-lowered-colors);
+            display: flex;
+            align-items: center;
+            font-size: var(--font-size-small);
+        }
+
+        /* =================== ANIMATIONS =================== */
+        @keyframes windowAppear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Desktop Icons -->
+    <div class="desktop-icon" style="top: calc(20px * var(--scale-factor)); right: calc(20px * var(--scale-factor));">
+        <div class="desktop-icon-img pixelated-image"></div>
+        <div class="desktop-icon-label">twitch.tv/Tsaef_</div>
+    </div>
+
+    <!-- Program Manager Window -->
+    <div class="program-manager win31-window">
+        <!-- Title Bar -->
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <div class="title-bar-icon pixelated-image"></div>
+                <span>Program Manager</span>
+            </div>
+            <div class="title-bar-controls">
+                <div class="title-bar-button win31-button">_</div>
+                <div class="title-bar-button win31-button">□</div>
+                <div class="title-bar-button win31-button">×</div>
+            </div>
+        </div>
+
+        <!-- Menu Bar -->
+        <div class="menu-bar">
+            <div class="menu-item"><u>F</u>ile</div>
+            <div class="menu-item"><u>O</u>ptions</div>
+            <div class="menu-item"><u>W</u>indow</div>
+            <div class="menu-item menu-item-hover"><u>H</u>elp</div>
+        </div>
+
+        <!-- Window Content with Program Groups -->
+        <div class="window-content">
+            <div class="program-group">
+                <div class="group-icon dofus"></div>
+                <div class="group-label">Dofus</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon cs2"></div>
+                <div class="group-label">CS2</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon valorant"></div>
+                <div class="group-label">VALORANT</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon eldenring"></div>
+                <div class="group-label">Elden Ring</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon skate"></div>
+                <div class="group-label">Skate.</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon repo"></div>
+                <div class="group-label">R.E.P.O.</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon gtav"></div>
+                <div class="group-label">GTAV</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon balatro"></div>
+                <div class="group-label">Balatro</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon fortnite"></div>
+                <div class="group-label">Fortnite</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon golfit"></div>
+                <div class="group-label">Golf It!</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon peak"></div>
+                <div class="group-label">PEAK</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon helldivers"></div>
+                <div class="group-label">Helldivers 2</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon trackmania"></div>
+                <div class="group-label">Trackmania²</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon remnant"></div>
+                <div class="group-label">Remnant II</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon tboi"></div>
+                <div class="group-label">The Binding of Isaac</div>
+            </div>
+            <div class="program-group">
+                <div class="group-icon betonbrutal"></div>
+                <div class="group-label">Beton Brutal</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nested Program Window (Main group) -->
+    <div class="program-window win31-window">
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <div class="title-bar-icon pixelated-image"></div>
+                <span>Hervé Cam</span>
+            </div>
+            <div class="title-bar-controls">
+                <div class="title-bar-button win31-button">_</div>
+                <div class="title-bar-button win31-button">□</div>
+                <div class="title-bar-button win31-button">×</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <!-- Empty for now, you can add program icons here -->
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-button win31-button">
+            <div class="start-logo"></div>
+            <span>Start</span>
+        </button>
+        <div class="taskbar-separator"></div>
+        <div class="taskbar-windows">
+            <button class="taskbar-window-button win31-button">
+                <div class="taskbar-window-icon pixelated-image"></div>
+                <span>Program Manager</span>
+            </button>
+            <button class="taskbar-window-button win31-button">
+                <div class="taskbar-window-icon pixelated-image"></div>
+                <span>Hervé Cam</span>
+            </button>
+        </div>
+        <div class="taskbar-separator"></div>
+        <div class="taskbar-tray">
+            <div class="taskbar-icon">🔊</div>
+            <div class="taskbar-icon">📡</div>
+            <div class="taskbar-clock" id="taskbar-clock">00:00</div>
+        </div>
+    </div>
+
+    <script>
+        // Optional: Add click functionality to minimize/maximize buttons
+        document.querySelectorAll('.title-bar-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Add your minimize/maximize logic here if needed
+            });
+        });
+
+        // Optional: Make windows draggable
+        let isDragging = false;
+        let currentWindow = null;
+        let offset = { x: 0, y: 0 };
+
+        document.querySelectorAll('.title-bar').forEach(titleBar => {
+            titleBar.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('title-bar-button')) return;
+                isDragging = true;
+                currentWindow = this.parentElement;
+                offset.x = e.clientX - currentWindow.offsetLeft;
+                offset.y = e.clientY - currentWindow.offsetTop;
+                currentWindow.style.zIndex = 1000;
+            });
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging && currentWindow) {
+                currentWindow.style.left = (e.clientX - offset.x) + 'px';
+                currentWindow.style.top = (e.clientY - offset.y) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            if (currentWindow) {
+                currentWindow.style.zIndex = '';
+            }
+            currentWindow = null;
+        });
+
+        // Update taskbar clock
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('taskbar-clock').textContent = `${hours}:${minutes}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
