@@ -5,167 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Widget Objectif Followers</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
             padding: 0;
             background: transparent;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
             overflow: hidden;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: grayscale;
+            font-smooth: never;
         }
 
+        /* Windows 3.1 Window Style */
         .goal-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(66, 66, 66, 0.9);
-            border-radius: 12px;
-            padding: 20px 25px 15px;
-            min-width: 320px;
-            
-            animation: containerPulse 4s ease-in-out infinite;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #000000 #000000 #ffffff;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+            min-width: 400px;
         }
 
-        .goal-title {
+        /* Title Bar */
+        .title-bar {
+            background: #000080;
             color: #ffffff;
-            font-size: 18px;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 
-                0 0 8px #808080,
-                0 0 15px #808080;
-            animation: textGlow 3s ease-in-out infinite alternate;
-        }
-
-        .goal-progress {
-            position: relative;
-            background: #3d3530;
-            border-radius: 8px;
-            height: 45px;
-            margin-bottom: 10px;
-            overflow: hidden;
-            border: 2px solid #424242;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .goal-progress-fill {
-            height: 100%;
-            background: #bb6125;
-            border-radius: 6px;
-            width: 0%;
-            position: relative;
-            transition: width 1s ease-in-out;
-            box-shadow: 
-                0 0 15px rgba(128, 128, 128, 0.4),
-                inset 0 0 10px rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-        }
-
-        /* Animation de brillance sur la barre remplie */
-        .goal-progress::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 40%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.2) 45%, 
-                rgba(255, 255, 255, 0.2) 65%, 
-                transparent);
-            border-radius: 6px;
-            animation: progressShine 3s ease-in-out infinite;
-            z-index: 1;
-        }
-
-        .goal-numbers {
+            padding: 3px 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #ffffff;
-            font-weight: 500;
+            font-weight: bold;
             font-size: 13px;
+            user-select: none;
         }
 
-        .current-followers {
-            color: #ffffff;
-            text-shadow: 0 0 10px #808080;
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .goal-target {
-            color: #ffffff;
-            text-shadow: 0 0 8px #808080;
+        .title-bar-icon {
+            width: 16px;
+            height: 16px;
+            background: url('https://avatars.fastly.steamstatic.com/86ba2db86ab21a6e55db18c24c9128a17e2473cd_full.jpg') center center/cover;
+            border: 1px solid #000000;
         }
 
+        .title-bar-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-bar-button {
+            width: 18px;
+            height: 16px;
+            background: #c0c0c0;
+            border: 1px solid;
+            border-color: #ffffff #000000 #000000 #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .title-bar-button:hover {
+            background: #d0d0d0;
+        }
+
+        .title-bar-button:active {
+            border-color: #000000 #ffffff #ffffff #000000;
+            background: #a0a0a0;
+        }
+
+        /* Window Content */
+        .window-content {
+            background: #c0c0c0;
+            padding: 15px;
+        }
+
+        .goal-title {
+            color: #000000;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        /* Progress Bar Container */
+        .goal-progress {
+            position: relative;
+            background: #ffffff;
+            height: 30px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            box-shadow: inset 1px 1px 0 #000000, inset -1px -1px 0 #dfdfdf;
+        }
+
+        /* Progress Bar Fill */
+        .goal-progress-fill {
+            height: 100%;
+            background: #000080;
+            width: 0;
+            position: relative;
+            transition: width 1s ease-in-out;
+            overflow: hidden;
+        }
+
+        /* Windows 3.1 Loading Animation */
+        .goal-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 8px,
+                rgba(255, 255, 255, 0.15) 8px,
+                rgba(255, 255, 255, 0.15) 16px
+            );
+            animation: progressStripes 1s linear infinite;
+        }
+
+        @keyframes progressStripes {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-22.62px);
+            }
+        }
+
+        /* Percentage Text */
         .goal-percentage {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 18px;
-            text-shadow: 
-                0 0 8px #000000,
-                0 0 15px #808080;
-            z-index: 4; /* Au-dessus de toutes les animations */
+            color: #000000;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 4;
+            text-shadow: 1px 1px 0 #ffffff;
         }
 
-
-
-        /* Animations */
-        @keyframes containerPulse {
-            0%, 100% {
-                background: rgba(66, 66, 66, 0.8);
-            }
-            50% {
-                background: rgba(66, 66, 66, 0.9);
-            }
+        /* Numbers Display */
+        .goal-numbers {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #000000;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 5px 0;
         }
 
-        @keyframes textGlow {
-            0% {
-                text-shadow: 
-                    0 0 6px #808080,
-                    0 0 12px #808080;
-            }
-            100% {
-                text-shadow: 
-                    0 0 10px #808080,
-                    0 0 18px #808080;
-            }
-        }
-
-
-
-        @keyframes progressShine {
-            0% { 
-                left: -50%;
-                opacity: 0;
-            }
-            20% {
-                opacity: 1;
-            }
-            80% {
-                opacity: 1;
-            }
-            100% { 
-                left: 100%;
-                opacity: 0;
-            }
-        }
-
-
-
-        /* Animation for goal updates */
-        .goal-update {
-            animation: goalPulse 0.6s ease-in-out;
+        .current-followers,
+        .goal-target {
+            color: #000000;
         }
 
         @keyframes goalPulse {
@@ -173,23 +187,32 @@
             50% { transform: translate(-50%, -50%) scale(1.05); }
             100% { transform: translate(-50%, -50%) scale(1); }
         }
-
-
-
     </style>
 </head>
 <body>
     <div class="goal-container">
-        <div class="goal-title" id="goal-title">Objectif Followers</div>
-        <div class="goal-progress">
-            <div class="goal-progress-fill" id="progress-bar"></div>
-            <div class="goal-percentage" id="goal-percentage">0%</div>
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <div class="title-bar-icon"></div>
+                <span id="goal-title">Objectif Followers</span>
+            </div>
+            <div class="title-bar-controls">
+                <div class="title-bar-button" id="minimizeBtn">_</div>
+                <div class="title-bar-button" id="maximizeBtn">□</div>
+                <div class="title-bar-button" id="closeBtn">×</div>
+            </div>
         </div>
-        <div class="goal-numbers">
-            <span class="current-followers" id="current-amount">4</span>
-            <span class="goal-target" id="target-amount">50</span>
+        <div class="window-content">
+            <div class="goal-title">Chargement en cours...</div>
+            <div class="goal-progress">
+                <div class="goal-progress-fill" id="progress-bar"></div>
+                <div class="goal-percentage" id="goal-percentage">0%</div>
+            </div>
+            <div class="goal-numbers">
+                <span class="current-followers" id="current-amount">4</span>
+                <span class="goal-target" id="target-amount">50</span>
+            </div>
         </div>
-
     </div>
 
     <script>
